@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora de Health Score</title>
+<style>
+:root{--bg:#f8e6ee;--card:#fff;--tx:#0c0a0b;--mu:#6a5560;--ln:#0c0a0b;--ac:#86103f;--sh:#86103f;--selbg:#0c0a0b;--seltx:#fff;--g:#14793f;--gb:#d9f2e3;--y:#8a5a00;--yb:#fbe9b5;--r:#b3202a;--rb:#f9d0d3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0a0b;--card:#151012;--tx:#f8eef2;--mu:#b39ba6;--ln:#c9306f;--ac:#c9306f;--sh:#c9306f;--selbg:#c9306f;--seltx:#0c0a0b;--g:#5be08f;--gb:#10281b;--y:#f2c14e;--yb:#2e2308;--r:#ff7b84;--rb:#341215;}}
+:root[data-theme="dark"]{--bg:#0c0a0b;--card:#151012;--tx:#f8eef2;--mu:#b39ba6;--ln:#c9306f;--ac:#c9306f;--sh:#c9306f;--selbg:#c9306f;--seltx:#0c0a0b;--g:#5be08f;--gb:#10281b;--y:#f2c14e;--yb:#2e2308;--r:#ff7b84;--rb:#341215;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 "Trebuchet MS","Avenir Next",system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:22px 16px 40px}
+.hd{position:relative;background:#1c030d;color:#fff;padding:24px 34px 22px 22px;border:2px solid var(--ln);box-shadow:6px 6px 0 var(--sh);margin-bottom:28px}
+.hd::after{content:"";position:absolute;right:0;top:0;bottom:0;width:14px;background:#86103f}
+h1{font:900 clamp(24px,5vw,38px)/1 "Arial Black","Helvetica Neue",Arial,sans-serif;text-transform:uppercase;letter-spacing:-.02em;margin:0}
+h1 em{font-style:normal;color:#e0468a}.logo{display:block;height:36px;width:auto;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:2px solid var(--ln);box-shadow:5px 5px 0 var(--sh);padding:16px;margin-bottom:22px}
+.card h2{font:700 13px ui-monospace,Menlo,Consolas,monospace;text-transform:uppercase;letter-spacing:.08em;margin:0 0 2px;color:var(--ac)}
+#crit{counter-reset:c}#crit .card h2::before{counter-increment:c;content:"0" counter(c) " / "}
+.hint{color:var(--mu);font-size:13px;margin:0 0 12px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.opt{text-align:left;background:var(--card);border:2px solid var(--ln);padding:10px;color:var(--tx);font:inherit;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.opt:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--sh)}
+.opt b{display:block;font-size:14px}.opt span{display:block;color:var(--mu);font-size:12.5px;margin-top:3px}
+.opt .w{float:right;font:700 10px ui-monospace,Menlo,monospace;font-style:normal;background:var(--ac);color:#fff;padding:2px 6px;text-transform:uppercase}
+.opt.on{background:var(--selbg);color:var(--seltx)}.opt.on span{color:inherit;opacity:.8}.opt.on .w{background:var(--seltx);color:var(--selbg)}
+.auto label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:2px dashed var(--mu);cursor:pointer}
+.auto label:first-of-type{border-top:0}
+.auto input{margin-top:3px;width:18px;height:18px;accent-color:var(--ac)}
+.res{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.flag{border:2px solid var(--ln);padding:14px 16px;margin-bottom:14px}
+.flag .e{font-size:24px}.flag .n{font:900 22px "Arial Black",Arial,sans-serif;text-transform:uppercase;letter-spacing:-.01em}
+.flag .sc{font:900 76px/1 "Arial Black",Arial,sans-serif;margin:4px 0}.flag .sc::after{content:" pts";font:700 14px ui-monospace,Menlo,monospace}
+.flag .p{font-size:13px}
+.f-g{background:var(--gb);color:var(--g)}.f-y{background:var(--yb);color:var(--y)}.f-r{background:var(--rb);color:var(--r)}.f-n{background:var(--bg);color:var(--mu)}
+table{width:100%;border-collapse:collapse;font-size:14px}td{padding:5px 0;border-top:1px dashed var(--mu)}td:last-child{text-align:right;font-weight:700}tr:first-child td{border-top:0}
+.tot td{font-size:16px;border-top:2px solid var(--ln)}
+ul{margin:6px 0 0;padding-left:18px;font-size:13.5px}li{margin:3px 0}
+.btn{width:100%;margin-top:12px;padding:10px;border:2px solid var(--ln);background:var(--ac);color:#fff;font:700 12px ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+.sec{font:700 11px ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--ac);margin:14px 0 4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hd"><img class="logo" alt="AR Marketing" src="data:image/png;base64,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"><h1>Calculadora de <em>Health Score</em></h1></div>
+<div class="grid">
+<div>
+<div id="crit"></div>
+<div class="card auto">
+<h2>Outros gatilhos de Crítico automático</h2>
+<p class="hint">Os demais critérios automáticos já estão nas seleções acima. Aqui ficam só os que não têm campo próprio. Se marcado, a flag vai direto para 🔴 Crítico.</p>
+<div id="autos"></div>
+</div>
+</div>
+<div class="res">
+<div class="card">
+<div id="flag" class="flag f-n"></div>
+<table id="calc"></table>
+<div id="alerts"></div>
+<button class="btn" id="reset">Limpar tudo</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+var CR=[
+{k:"rel",t:"Relacionamento",h:"Qualidade da comunicação, confiança do cliente e clima da relação.",o:[
+{n:"Estável",w:1,d:"Relação cordial, confiança na equipe, conversas produtivas, sem atritos relevantes."},
+{n:"Abalado",w:2,d:"Reclamações frequentes, insegurança, tom ríspido, tensão em reuniões, questionamentos recorrentes."},
+{n:"Em crise",w:4,d:"Comunicação hostil, ameaça de cancelamento, ataques pessoais, desgaste constante, perda evidente de confiança.",auto:"Relacionamento em crise"}]},
+{k:"res",t:"Resultado",h:"Percepção de valor, performance da operação e alinhamento com a expectativa criada.",o:[
+{n:"Bom",w:1,d:"Meta atingida ou superada, cliente percebe valor, ROI visível, operação saudável."},
+{n:"Mais ou menos",w:2,d:"Resultado parcial, cliente ainda percebe algum valor, performance dentro do tolerável."},
+{n:"Indefinido",w:2,d:"Falta de dados ou feedback; não é possível validar a performance real."},
+{n:"Ruim",w:3,d:"Abaixo da expectativa, cliente começa a questionar valor, performance preocupante."},
+{n:"Péssimo",w:4,d:"Forte frustração, perda evidente de confiança, sem perspectiva clara de reversão."}]},
+{k:"eng",t:"Engajamento",h:"Participação do cliente, frequência de resposta e disponibilidade para colaborar. Ajuste secundário.",o:[
+{n:"Bom ou excelente",w:0,d:"Responde em até 48h, participa das reuniões e executa os combinados."},
+{n:"Médio ou oscilando",w:1,d:"Participação irregular, demora para responder em alguns momentos."},
+{n:"Baixo",w:2,d:"Demora muito, falta a reuniões, só responde após cobranças, não executa combinados."},
+{n:"Ghosting",w:0,d:"Comunicação quase inexistente ou sem responder há mais de 14 dias; não retorna nem em assuntos críticos.",auto:"Ghosting / comunicação quase inexistente"}]},
+{k:"adi",t:"Adimplência",h:"Regularidade financeira do cliente. Ajuste secundário.",o:[
+{n:"Adimplente",w:0,d:"Pagamentos em dia."},
+{n:"Atrasos recorrentes",w:1,d:"Atrasa com frequência; aumenta o nível de atenção."},
+{n:"1 ou 2 em atraso",w:1,d:"1 ou 2 mensalidades em atraso; acompanhar de perto."},
+{n:"Mais de 2 em atraso",w:0,d:"Mais de 2 mensalidades em atraso; deve ser escalado.",auto:"Mais de 2 mensalidades em atraso"}]}];
+var AU=["Cliente fala em cancelar","Escalada formal de insatisfação"];
+var S={rel:null,res:null,eng:null,adi:null},A=AU.map(function(){return false});
+function $(i){return document.getElementById(i)}
+function build(){
+var h="";CR.forEach(function(c){h+='<div class="card"><h2>'+c.t+'</h2><p class="hint">'+c.h+'</p><div class="opts">';
+c.o.forEach(function(o,i){h+='<button class="opt'+(S[c.k]===i?' on':'')+'" data-k="'+c.k+'" data-i="'+i+'"><b>'+o.n+'<i class="w">'+(o.auto?'crítico':'+'+o.w)+'</i></b><span>'+o.d+'</span></button>'});
+h+='</div></div>'});$("crit").innerHTML=h;
+var a="";AU.forEach(function(t,i){a+='<label><input type="checkbox" data-a="'+i+'"'+(A[i]?' checked':'')+'><span>'+t+'</span></label>'});$("autos").innerHTML=a}
+function calc(){
+var sel=function(k){return S[k]===null?null:CR[CR.findIndex(function(c){return c.k===k})].o[S[k]]};
+var r=sel("rel"),s=sel("res"),e=sel("eng"),d=sel("adi"),reasons=[];
+A.forEach(function(v,i){if(v)reasons.push(AU[i])});
+[r,e,d].forEach(function(o){if(o&&o.auto&&reasons.indexOf(o.auto)<0)reasons.push(o.auto)});
+var done=r&&s&&e&&d,init=(r?r.w:0)+(s?s.w:0),adj=(e?e.w:0)+(d?d.w:0),tot=init+adj;
+var cls,em,nm,pr;
+if(reasons.length){cls="f-r";em="🔴";nm="Crítico";pr="Crítico automático: escalar para liderança e acompanhar com urgência."}
+else if(!done){cls="f-n";em="⚪";nm="Preencha os 4 critérios";pr=""}
+else if(tot<=3){cls="f-g";em="🟢";nm="Controlado";pr="Baixa prioridade: manter fluxo normal de acompanhamento."}
+else if(tot===4){cls="f-y";em="🟡";nm="Atenção";pr="Prioridade média: acompanhamento estratégico semanal. Máx. 30 dias sem evolução; depois reavaliar para Crítico."}
+else if(tot>=8){cls="f-r";em="🔴";nm="Crítico";pr="Prioridade máxima: escalar para liderança e acompanhar com urgência."}
+else{cls="f-r";em="🔴";nm="Crítico";pr="Prioridade alta: criar plano de ação e acompanhar de perto (semanal obrigatório)."}
+$("flag").className="flag "+cls;
+$("flag").innerHTML='<div class="e">'+em+'</div><div class="n">'+nm+'</div><div class="sc">'+(done?tot:"–")+'</div><div class="p">'+pr+'</div>';
+$("calc").innerHTML='<tr><td>Relacionamento</td><td>'+(r?r.n+' ('+r.w+')':'—')+'</td></tr><tr><td>Resultado</td><td>'+(s?s.n+' ('+s.w+')':'—')+'</td></tr><tr><td>Score inicial</td><td>'+init+'</td></tr><tr><td>Engajamento</td><td>'+(e?e.n+' (+'+e.w+')':'—')+'</td></tr><tr><td>Adimplência</td><td>'+(d?d.n+' (+'+d.w+')':'—')+'</td></tr><tr class="tot"><td>Score final</td><td>'+tot+'</td></tr>';
+var esc=[];
+if(A[0])esc.push("Cliente citou cancelamento");
+if(r&&r.n==="Em crise")esc.push("Relacionamento em crise");
+if(e&&e.auto)esc.push("Cliente sem responder (ghosting)");
+if(r&&s&&r.n==="Abalado"&&(s.n==="Ruim"||s.n==="Péssimo"))esc.push("Resultado ruim + relacionamento abalado");
+if(d&&d.auto)esc.push("Inadimplência elevada");
+if(A[1])esc.push("Escalada formal de insatisfação");
+var h="";
+if(reasons.length)h+='<div class="sec">Motivos do crítico automático</div><ul>'+reasons.map(function(x){return"<li>"+x+"</li>"}).join("")+"</ul>";
+if(esc.length)h+='<div class="sec">Escalar para liderança</div><ul>'+esc.map(function(x){return"<li>"+x+"</li>"}).join("")+"</ul>";
+$("alerts").innerHTML=h;
+}
+document.addEventListener("click",function(ev){
+var b=ev.target.closest(".opt");
+if(b){var k=b.dataset.k,i=+b.dataset.i;S[k]=S[k]===i?null:i;build();calc();return}
+if(ev.target.id==="reset"){S={rel:null,res:null,eng:null,adi:null};A=AU.map(function(){return false});build();calc()}
+});
+document.addEventListener("change",function(ev){var i=ev.target.dataset.a;if(i!==undefined){A[+i]=ev.target.checked;calc()}});
+build();calc();
+</script>
+</body>
+</html>
